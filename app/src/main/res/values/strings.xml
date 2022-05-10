@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PCBAHWTest</string>
+    <string name="app_version">Version:%s</string>
+</resources>
