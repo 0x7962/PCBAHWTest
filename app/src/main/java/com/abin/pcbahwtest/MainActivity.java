@@ -11,6 +11,7 @@ import com.abin.pcbahwtest.utils.ALOG;
 
 public class MainActivity extends AppCompatActivity {
 
+    private HwManager mHwManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,5 +27,17 @@ public class MainActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mHwManager = HwManager.getInstance();
+    }
+
+    @Override
+    protected void onPause() {
+        mHwManager.closeHwCtl();
+        super.onPause();
     }
 }
