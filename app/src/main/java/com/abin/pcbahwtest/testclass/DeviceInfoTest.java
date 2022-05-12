@@ -1,6 +1,7 @@
 package com.abin.pcbahwtest.testclass;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 
@@ -19,7 +20,7 @@ email: ybjaychou@gmail.com
 public class DeviceInfoTest extends BaseTest {
 
     public interface CallBack {
-        void onInfo(String info);
+        void onInfo(String info, String serial);
     }
 
     private CallBack mCallBack;
@@ -67,7 +68,7 @@ public class DeviceInfoTest extends BaseTest {
                 String freq = readCpuFreq();
                 String temp = readCpuTemp();
                 if (mCallBack != null) {
-                    mCallBack.onInfo(temp + ", " + freq);
+                    mCallBack.onInfo(temp + ", " + freq, Build.SERIAL);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

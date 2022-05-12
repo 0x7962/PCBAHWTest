@@ -17,9 +17,9 @@ public class SpeechUtil implements TextToSpeech.OnInitListener {
 
     @Override
     public void onInit(int status) {
-        if(status == TextToSpeech.SUCCESS){
+        if (status == TextToSpeech.SUCCESS) {
             int ret = mTextToSpeech.setLanguage(Locale.CHINA);
-            if(ret == TextToSpeech.LANG_MISSING_DATA || ret == TextToSpeech.LANG_NOT_SUPPORTED){
+            if (ret == TextToSpeech.LANG_MISSING_DATA || ret == TextToSpeech.LANG_NOT_SUPPORTED) {
                 ALOG.E("device not support chinese tts");
                 mTextToSpeech.setLanguage(Locale.US);
             }
@@ -29,7 +29,14 @@ public class SpeechUtil implements TextToSpeech.OnInitListener {
         }
     }
 
-    public void speak(String text){
+    public void shutdown() {
+        if (mTextToSpeech != null) {
+            mTextToSpeech.stop();
+            mTextToSpeech.shutdown();
+        }
+    }
+
+    public void speak(String text) {
         mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
 }

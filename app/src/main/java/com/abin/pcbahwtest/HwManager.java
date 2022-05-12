@@ -15,7 +15,7 @@ email: ybjaychou@gmail.com
 */
 public class HwManager {
 
-    public interface Callback{
+    public interface Callback {
         void onTempHum(String info);
     }
 
@@ -68,6 +68,7 @@ public class HwManager {
         mIsCanCtl.set(mHwCtl.HW_StartControl() == 0);
         new StatThread().start();
         new LEDThread().start();
+        new TempHumThread().start();
         ALOG.I("HwManager started... mIsCanCtl is:%b", mIsCanCtl.get());
     }
 
@@ -135,7 +136,8 @@ public class HwManager {
             if (stats[0] == 0) {//gpio 1
                 buzzerSndOut();
                 mHwCtl.HW_relayEnable(RELAY_INDEX_1);
-                if(mSpeechUtil != null) mSpeechUtil.speak(mContext.getString(R.string.gpio_1_speech_text));
+                if (mSpeechUtil != null)
+                    mSpeechUtil.speak(mContext.getString(R.string.gpio_1_speech_text));
             } else {
                 buzzerSndOff();
                 mHwCtl.HW_relayDisable(RELAY_INDEX_1);
@@ -144,7 +146,8 @@ public class HwManager {
             if (stats[1] == 0) {//gpio 2
                 buzzerSndOut();
                 mHwCtl.HW_relayEnable(RELAY_INDEX_2);
-                if(mSpeechUtil != null) mSpeechUtil.speak(mContext.getString(R.string.gpio_2_speech_text));
+                if (mSpeechUtil != null)
+                    mSpeechUtil.speak(mContext.getString(R.string.gpio_2_speech_text));
             } else {
                 buzzerSndOff();
                 mHwCtl.HW_relayDisable(RELAY_INDEX_2);
@@ -153,7 +156,8 @@ public class HwManager {
             if (stats[2] == 0) {//gpio 3
                 buzzerSndOut();
                 mHwCtl.HW_relayEnable(RELAY_INDEX_3);
-                if(mSpeechUtil != null) mSpeechUtil.speak(mContext.getString(R.string.gpio_3_speech_text));
+                if (mSpeechUtil != null)
+                    mSpeechUtil.speak(mContext.getString(R.string.gpio_3_speech_text));
             } else {
                 buzzerSndOff();
                 mHwCtl.HW_relayDisable(RELAY_INDEX_3);
@@ -162,7 +166,8 @@ public class HwManager {
             if (stats[3] == 0) {//gpio 4
                 buzzerSndOut();
                 mHwCtl.HW_relayEnable(RELAY_INDEX_4);
-                if(mSpeechUtil != null) mSpeechUtil.speak(mContext.getString(R.string.gpio_4_speech_text));
+                if (mSpeechUtil != null)
+                    mSpeechUtil.speak(mContext.getString(R.string.gpio_4_speech_text));
             } else {
                 buzzerSndOff();
                 mHwCtl.HW_relayDisable(RELAY_INDEX_4);
@@ -196,10 +201,33 @@ public class HwManager {
     }
 
     private class TempHumThread extends Thread {
+        private int[] data = new int[4];
+        String symbolStr = "";
 
         @Override
         public void run() {
+            while (mIsCanCtl.get()) {
+                int ret = mHwCtl.HW_GetTemprature(data);
+                if (ret > 0) {
+                    symbolStr = (data[0] == 0) ? "+" : "-";
 
+                    //int temp1 = Integer.parseInt(Byte.toString((byte) data[1]), 16);
+                    //int hum = Integer.parseInt(Byte.toString((byte) data[3]), 16);
+                    String temp = symbolStr + data[1] + "." + data[2];
+                    ALOG.D("temp--->>>%s", temp);
+                    //String data_str = mContext.getString(R.string.temp_hum_text,
+                    //        temp, data[3]);
+                    if(mCallback != null){
+                        mCallback.onTempHum("温度:" + temp +"°C, 湿度:" + data[3] + "%");
+                    }
+                }
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

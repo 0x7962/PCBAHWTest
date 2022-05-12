@@ -10,4 +10,6 @@
     <string name="eth_infos">以太网: %s, %s</string>
     <string name="connected">已连接</string>
     <string name="disconnected">未连接</string>
+
+    <string name="temp_hum_text">温度:%s&#8451;, 湿度:%d&#037;</string>
 </resources>

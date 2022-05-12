@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 
 import com.abin.pcbahwtest.BaseTest;
+import com.abin.pcbahwtest.HwManager;
 import com.abin.pcbahwtest.R;
 import com.abin.pcbahwtest.utils.ALOG;
 
@@ -19,9 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
@@ -77,8 +81,10 @@ public class EthTest extends BaseTest {
 //        mContext.registerReceiver(mReceiver, filter);
 
         //delay update eth state, wait callback is ready
-        mHandler.postDelayed(mDelayUpdateState, 2000);
+        //mHandler.postDelayed(mDelayUpdateState, 2000);
         mIsStopped = false;
+
+        new NetWorkRequest().start();
     }
 
     private Runnable mDelayUpdateState = new Runnable() {
@@ -89,7 +95,7 @@ public class EthTest extends BaseTest {
     };
 
     public void updateEthState() {
-        if(mIsStopped){
+        if (mIsStopped) {
             ALOG.D("stopped return it");
             return;
         }
@@ -133,7 +139,7 @@ public class EthTest extends BaseTest {
         }
 
         ALOG.D("======>>>>mIsStopped:%b", mIsStopped);
-        if(!mIsStopped) {
+        if (!mIsStopped) {
             mHandler.removeCallbacks(mDelayUpdateState);
             mHandler.postDelayed(mDelayUpdateState, 2000);
         }
@@ -143,7 +149,7 @@ public class EthTest extends BaseTest {
     @Override
     public void stopTest() {
         mIsStopped = true;
-        mHandler.removeCallbacks(mDelayUpdateState);
+        //mHandler.removeCallbacks(mDelayUpdateState);
         //mContext.unregisterReceiver(mReceiver);
     }
 
@@ -273,10 +279,10 @@ public class EthTest extends BaseTest {
         return macSerial;
     }
 
-    private void ping(String ip){
+    private void ping(String ip) {
         Process process;
         boolean isOk = false;
-        try{
+        try {
             process = Runtime.getRuntime().exec("ls");
             InputStream inputStream = process.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -284,7 +290,7 @@ public class EthTest extends BaseTest {
             ALOG.D("------>>sasas>%s", reader.readLine());
             while ((line = reader.readLine()) != null) {
                 ALOG.D("---1111--->>%s", line);
-                if(line.contains("rtt")){
+                if (line.contains("rtt")) {
                     isOk = true;
                     break;
                 }
@@ -293,9 +299,52 @@ public class EthTest extends BaseTest {
             reader.close();
             inputStream.close();
             ALOG.D("-------->>>isOk:%b", isOk);
-            if(mCallback != null) mCallback.onMobileStateChange(isOk, "exit:");
-        }catch (Exception e){
+            if (mCallback != null) mCallback.onMobileStateChange(isOk, "exit:");
+        } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private class NetWorkRequest extends Thread {
+
+        @Override
+        public void run() {
+            while (!mIsStopped) {
+                try {
+                    String mac = getMac("eth0");
+                    ALOG.D("MAC:%s", mac);
+
+                    int requestCode = requestNetwork("https://www.baidu.com/");
+                    ALOG.D("===========>>>>requestCode:%d", requestCode);
+                    if (mCallback != null)
+                        mCallback.onGetInfo(mContext.getString(
+                                R.string.eth_infos,
+                                mac,
+                                (requestCode == 200) ?
+                                        mContext.getString(R.string.connected) :
+                                        mContext.getString(R.string.disconnected)));
+                    Thread.sleep(5000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+        }
+
+        private int requestNetwork(String urlStr) {
+            int code = 0;
+            try {
+                URL url = new URL(urlStr);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(5000);
+                code = connection.getResponseCode();
+                connection.disconnect();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return code;
         }
     }
 }

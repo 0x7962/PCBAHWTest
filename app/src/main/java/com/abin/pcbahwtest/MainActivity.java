@@ -1,7 +1,7 @@
 package com.abin.pcbahwtest;
 
-import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import com.abin.pcbahwtest.testclass.EthTest;
 import com.abin.pcbahwtest.utils.ALOG;
 import com.abin.pcbahwtest.utils.SpeechUtil;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private HwManager mHwManager;
     private SpeechUtil mSpeechUtil;
@@ -25,10 +25,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mSpeechUtil = new SpeechUtil(this);
-        mTestManager = new TestManager(this);
 
-        TextView tvVersion = findViewById(R.id.tv_version);
+
+        TextView tvVersion = (TextView) findViewById(R.id.tv_version);
         PackageManager packageManager = getPackageManager();
         try {
             PackageInfo info = packageManager.getPackageInfo(this.getPackageName(), 0);
@@ -39,15 +38,19 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        mEthView = findViewById(R.id.tv_eth);
-        mCpuView = findViewById(R.id.tv_cpu);
-        mTempHumView = findViewById(R.id.tv_temp_hum);
+        mEthView = (TextView) findViewById(R.id.tv_eth);
+        mCpuView = (TextView) findViewById(R.id.tv_cpu);
+        mTempHumView = (TextView) findViewById(R.id.tv_temp_hum);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        mSpeechUtil = new SpeechUtil(this);
+        mTestManager = new TestManager(this);
+
         mHwManager = HwManager.getInstance(this);
+        mHwManager.setCallback(mHwCallback);
         mHwManager.setSpeechUtil(mSpeechUtil);
 
         mTestManager.startTest(EthTest.class);
@@ -62,8 +65,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         mHwManager.closeHwCtl();
-        if(mTestManager != null)
+        if (mTestManager != null)
             mTestManager.stopTest();
+
+        if(mSpeechUtil != null) mSpeechUtil.shutdown();
         super.onPause();
     }
 
@@ -74,8 +79,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onGetInfo(String ip) {
-            mEthView.setText(ip);
+        public void onGetInfo(final String ip) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mEthView.setText(ip);
+                }
+            });
+
         }
 
         @Override
@@ -86,11 +97,23 @@ public class MainActivity extends AppCompatActivity {
 
     private final DeviceInfoTest.CallBack mDevInfoCallback = new DeviceInfoTest.CallBack() {
         @Override
-        public void onInfo(final String info) {
+        public void onInfo(final String info, final String serial) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mCpuView.setText(info);
+                    mCpuView.setText(info + " 序列号:" + serial);
+                }
+            });
+        }
+    };
+
+    private final HwManager.Callback mHwCallback = new HwManager.Callback() {
+        @Override
+        public void onTempHum(final String info) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mTempHumView.setText(info);
                 }
             });
         }
