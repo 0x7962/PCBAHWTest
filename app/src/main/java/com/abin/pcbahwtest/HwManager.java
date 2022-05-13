@@ -258,6 +258,10 @@ public class HwManager {
                         if (mCallback != null) {
                             mCallback.onTempHum("温度:" + temp + "°C, 湿度:" + data[3] + "%");
                         }
+                    }else{
+                        if (mCallback != null) {
+                            mCallback.onTempHum("获取温湿度失败");
+                        }
                     }
 
                     try {
