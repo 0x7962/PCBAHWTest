@@ -78,8 +78,8 @@ public class USBTest extends BaseTest {
         HashMap<String, UsbDevice> devices = mUsbManager.getDeviceList();
         if (devices != null) {
             for (Map.Entry<String, UsbDevice> entry : devices.entrySet()) {
-                ALOG.D("ProductName:%s", entry.getValue().getProductName());
-                mUsbStr.append(entry.getValue().getProductName());
+                ALOG.D("ProductName:%s", entry.getValue().getDeviceName());
+                mUsbStr.append(entry.getValue().getDeviceName());
                 mUsbStr.append("\n");
                 ++usbCnt;
             }

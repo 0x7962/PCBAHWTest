@@ -31,7 +31,7 @@
                 android:background="@color/colorAccent" />
 
             <TextView
-                android:id="@+id/tv_eth"
+                android:id="@+id/tv_cpu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="PackageInfo info = packageManager.getPackageInfo"
@@ -45,7 +45,7 @@
                 android:background="@color/colorAccent" />
 
             <TextView
-                android:id="@+id/tv_cpu"
+                android:id="@+id/tv_eth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="PackageInfo info = packageManager.getPackageInfo"
@@ -73,6 +73,65 @@
                 android:background="@color/colorAccent" />
 
             <TextView
+                android:id="@+id/tv_rtc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="PackageInfo info = packageManager.getPackageInfo"
+                android:textSize="@dimen/text_size_infos" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_width"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:background="@color/colorAccent" />
+
+            <TextView
+                android:id="@+id/tv_usb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="PackageInfo info = packageManager.getPackageInfo"
+                android:textSize="@dimen/text_size_infos" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_width"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:background="@color/colorAccent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_record"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_text_record"
+                    android:textSize="@dimen/text_size_infos"
+                    android:onClick="recordAudio"/>
+
+                <Button
+                    android:id="@+id/btn_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_text_play"
+                    android:textSize="@dimen/text_size_infos"
+                    android:onClick="playAudio"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_width"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:background="@color/colorAccent" />
+
+            <TextView
+                android:id="@+id/tv_idcard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="PackageInfo info = packageManager.getPackageInfo"
@@ -89,53 +148,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="PackageInfo info = packageManager.getPackageInfo"
-                android:textSize="@dimen/text_size_infos" />
+                android:textSize="@dimen/text_size_infos"
+                android:visibility="gone"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/line_width"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:background="@color/colorAccent" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="PackageInfo info = packageManager.getPackageInfo"
-                android:textSize="@dimen/text_size_infos" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/line_width"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:background="@color/colorAccent" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="PackageInfo info = packageManager.getPackageInfo"
-                android:textSize="@dimen/text_size_infos" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/line_width"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:background="@color/colorAccent" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="PackageInfo info = packageManager.getPackageInfo"
-                android:textSize="@dimen/text_size_infos" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/line_width"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:background="@color/colorAccent" />
+                android:background="@color/colorAccent"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <LinearLayout

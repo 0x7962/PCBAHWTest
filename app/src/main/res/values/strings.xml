@@ -12,4 +12,7 @@
     <string name="disconnected">未连接</string>
 
     <string name="temp_hum_text">温度:%s&#8451;, 湿度:%d&#037;</string>
+
+    <string name="btn_text_record">录音</string>
+    <string name="btn_text_play">播放</string>
 </resources>

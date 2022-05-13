@@ -46,7 +46,7 @@ public class AndroidCameraTest extends BaseTest {
 
     private Camera mCamera0, mCamera1;
 
-    private boolean mIsPortrait = true;
+    private boolean mIsPortrait = false;
 
     private boolean mIsPreviewing;
 
@@ -79,10 +79,10 @@ public class AndroidCameraTest extends BaseTest {
 
     public void onResume() {
         //ready to open camera
-        if (Camera.getNumberOfCameras() > 0)
-            mHandler.postDelayed(openCamera0, 1000);
-        else
-            ALOG.E("Camera not found!!!");
+//        if (Camera.getNumberOfCameras() > 0)
+//            mHandler.postDelayed(openCamera0, 1000);
+//        else
+//            ALOG.E("Camera not found!!!");
     }
 
     public void onStop() {
@@ -96,14 +96,18 @@ public class AndroidCameraTest extends BaseTest {
 
         mUSBMonitor.unregister();*/
 
-        mHandler.removeCallbacks(openCamera0);
-        mHandler.removeCallbacks(openCamera1);
-        stopCameras();
+//        mHandler.removeCallbacks(openCamera0);
+//        mHandler.removeCallbacks(openCamera1);
+//        stopCameras();
     }
 
     @Override
     public void startTest() {
         //nothing to do
+        if (Camera.getNumberOfCameras() > 0)
+            mHandler.postDelayed(openCamera0, 2000);
+        else
+            ALOG.E("Camera not found!!!");
     }
 
     @Override
@@ -120,6 +124,9 @@ public class AndroidCameraTest extends BaseTest {
             mUSBMonitor = null;
         }*/
 
+        mHandler.removeCallbacks(openCamera0);
+        mHandler.removeCallbacks(openCamera1);
+        stopCameras();
     }
 
     /*private void getAllUvcCamera() {

@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.TimeZone;
 
 /**
  * Created by a_Bin on 2018/7/23.
@@ -113,7 +114,10 @@ public class RTCTest extends BaseTest {
                 }
             }
         }
-        if (mCallback != null) mCallback.onResult(date + " " + time);
+        //TimeZone timeZone = TimeZone.getDefault();
+        //timeZone.getOffset();
+
+        if (mCallback != null) mCallback.onResult(date.trim() + " " + time.trim());
         return (d1 <= 12 && d2 <= 31 && t0 <= 23 && t1 < 60 && t2 < 60);
     }
 }

@@ -323,7 +323,7 @@ public class EthTest extends BaseTest {
                                 (requestCode == 200) ?
                                         mContext.getString(R.string.connected) :
                                         mContext.getString(R.string.disconnected)));
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

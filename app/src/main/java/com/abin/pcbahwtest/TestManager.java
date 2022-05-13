@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class TestManager {
 
-    private Map<String, BaseTest> tests = new HashMap<>();
+    private Map<String, BaseTest> tests = new HashMap<String, BaseTest>();
 
     private Context mContext;
 

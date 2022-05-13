@@ -3,8 +3,8 @@ package com.abin.pcbahwtest.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+//import androidx.annotation.NonNull;
+//import androidx.annotation.Nullable;
 
 /**
  * Created by a_Bin on 2017/12/4.
@@ -27,7 +27,7 @@ public class ALOG {
         }
     }
 
-    public static void D(@NonNull String format, @Nullable Object... args) {
+    public static void D(/*@NonNull*/ String format, /*@Nullable*/ Object... args) {
         if (!DBG) return;
         String tag = getCallerClass();
         String msg = String.format(format, args);
@@ -35,13 +35,13 @@ public class ALOG {
             Log.d(tag, msg);
     }
 
-    public static void I(@NonNull String format, @Nullable Object... args) {
+    public static void I(/*@NonNull*/ String format, /*@Nullable*/ Object... args) {
         String tag = getCallerClass();
         String msg = String.format(format, args);
         if (!TextUtils.isEmpty(tag))
             Log.i(tag, msg);
     }
-    public static void E(@NonNull String format, @Nullable Object... args) {
+    public static void E(/*@NonNull*/ String format, /*@Nullable*/ Object... args) {
         String tag = getCallerClass();
         String msg = String.format(format, args);
         if (!TextUtils.isEmpty(tag))

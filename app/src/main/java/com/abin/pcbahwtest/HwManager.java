@@ -57,6 +57,10 @@ public class HwManager {
 
     private AtomicBoolean mIsCanCtl = new AtomicBoolean();
 
+    private final Object mlock1 = new Object();
+    private final Object mlock2 = new Object();
+    private final Object mlock3 = new Object();
+
     public static HwManager getInstance(Context context) {
         if (mInstance == null) mInstance = new HwManager(context);
         return mInstance;
@@ -70,6 +74,9 @@ public class HwManager {
         new LEDThread().start();
         new TempHumThread().start();
         ALOG.I("HwManager started... mIsCanCtl is:%b", mIsCanCtl.get());
+        synchronized (mlock1){//multiple thread run one by one.
+            mlock1.notify();
+        }
     }
 
     public void setSpeechUtil(SpeechUtil mSpeechUtil) {
@@ -118,16 +125,28 @@ public class HwManager {
         @Override
         public void run() {
             while (mIsCanCtl.get()) {
-                int ret = mHwCtl.HW_GetISTAT(mISTAT);
-                ALOG.D("HW_GetISTAT ret is:%d", ret);
-                if (ret > 0) {
-                    checkAndCtl(mISTAT);
+                synchronized (mlock1) {
+                    try {
+                        mlock1.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    int ret = mHwCtl.HW_GetISTAT(mISTAT);
+
+                    ALOG.D("HW_GetISTAT ret is:%d", ret);
+                    if (ret > 0) {
+                        checkAndCtl(mISTAT);
+                    }
+                    try {
+                        Thread.sleep(GET_STAT_INTERVAL);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    synchronized (mlock2) {
+                        mlock2.notify();
+                    }
                 }
-                try {
-                    Thread.sleep(GET_STAT_INTERVAL);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+
             }
             ALOG.I("StatThread is finished...");
         }
@@ -181,20 +200,33 @@ public class HwManager {
         @Override
         public void run() {
             while (mIsCanCtl.get()) {
-                mHwCtl.HW_LedEnable(LED_VALUE[i]);
 
-                try {
-                    Thread.sleep(LED_CTL_INTERVAL);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                synchronized (mlock2){
+                    try {
+                        mlock2.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    mHwCtl.HW_LedEnable(LED_VALUE[i]);
+
+                    try {
+                        Thread.sleep(LED_CTL_INTERVAL);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    mHwCtl.HW_LedDisable(LED_VALUE[i]);
+
+                    i++;
+                    if (i >= LED_VALUE.length) {
+                        i = 0;
+                    }
+
+                    synchronized (mlock3){
+                        mlock3.notify();
+                    }
                 }
 
-                mHwCtl.HW_LedDisable(LED_VALUE[i]);
-
-                i++;
-                if (i >= LED_VALUE.length) {
-                    i = 0;
-                }
             }
             ALOG.I("LEDThread is finished...");
         }
@@ -207,26 +239,37 @@ public class HwManager {
         @Override
         public void run() {
             while (mIsCanCtl.get()) {
-                int ret = mHwCtl.HW_GetTemprature(data);
-                if (ret > 0) {
-                    symbolStr = (data[0] == 0) ? "+" : "-";
+                synchronized (mlock3){
+                    try {
+                        mlock3.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    int ret = mHwCtl.HW_GetTemprature(data);
+                    if (ret > 0) {
+                        symbolStr = (data[0] == 0) ? "+" : "-";
 
-                    //int temp1 = Integer.parseInt(Byte.toString((byte) data[1]), 16);
-                    //int hum = Integer.parseInt(Byte.toString((byte) data[3]), 16);
-                    String temp = symbolStr + data[1] + "." + data[2];
-                    ALOG.D("temp--->>>%s", temp);
-                    //String data_str = mContext.getString(R.string.temp_hum_text,
-                    //        temp, data[3]);
-                    if(mCallback != null){
-                        mCallback.onTempHum("温度:" + temp +"°C, 湿度:" + data[3] + "%");
+                        //int temp1 = Integer.parseInt(Byte.toString((byte) data[1]), 16);
+                        //int hum = Integer.parseInt(Byte.toString((byte) data[3]), 16);
+                        String temp = symbolStr + data[1] + "." + data[2];
+                        ALOG.D("temp--->>>%s", temp);
+                        //String data_str = mContext.getString(R.string.temp_hum_text,
+                        //        temp, data[3]);
+                        if (mCallback != null) {
+                            mCallback.onTempHum("温度:" + temp + "°C, 湿度:" + data[3] + "%");
+                        }
+                    }
+
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    synchronized (mlock1){
+                        mlock1.notify();
                     }
                 }
 
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }
